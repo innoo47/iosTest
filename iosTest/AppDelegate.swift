@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import NMapsMap
+import CoreLocation
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,6 +16,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // 네이버 지도 API 클라이언트 ID
+        NMFAuthManager.shared().clientId = "\(Define.Naver_Map_API_ClientID)"
+
         return true
     }
 
