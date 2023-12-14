@@ -31,10 +31,8 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         self.setLocationData()
         self.setUI()
         
-//        naverMapView.touchDelegate = self
         
     }
-    
     
     // UI 설정
     func setUI() {
@@ -53,40 +51,38 @@ class MapViewController: UIViewController, CLLocationManagerDelegate {
         
         
     }
-    
-    // 혅재 위치
-    func setLocationData() {
-        
-        // locationManager 설정
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest // 위치 업데이트의 정확도 설정 (최고 정확도)
-        locationManager.requestWhenInUseAuthorization() // 위치 서비스를 사용하는 동안 앱의 위치 접근 권한을 요청
-        locationManager.startUpdatingLocation() // 위치 업데이트 시작
 
-        // 위도, 경도 가져오기
-        let latitude = locationManager.location?.coordinate.latitude ?? 0
-        let longitude = locationManager.location?.coordinate.longitude ?? 0
+    // 위치 업데이트가 발생했을 때 호출되는 메서드
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else {
+            return
+        }
+
+        let latitude = location.coordinate.latitude
+        let longitude = location.coordinate.longitude
         print("latitude : \(latitude), longitude : \(longitude)")
-        
-        // 네이버지도를 내위치 주변으로 보여지게끔 설정
+
+        // 네이버지도를 내 위치 주변으로 보여지게끔 설정
         let cameraUpdate = NMFCameraUpdate(scrollTo: NMGLatLng(lat: latitude, lng: longitude), zoomTo: 7)
         naverMapView.moveCamera(cameraUpdate)
         cameraUpdate.animation = .easeIn
-        
+
         // 오버레이를 내 위치의 위도,경도로 설정
         guard let locationOverlay = locationOverlay else { return }
         locationOverlay.hidden = false
-        locationOverlay.location = NMGLatLng(lat: latitude, lng: longitude) // 오버레이 위치
-//        locationOverlay.icon = NMFOverlayImage(name: "marker_icon") // 오버레이 아이콘 이미지
-        
+        locationOverlay.location = NMGLatLng(lat: latitude, lng: longitude)
+            
+        // 위치 업데이트가 필요 없다면 중지
+        manager.stopUpdatingLocation()
     }
 
-    func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
-        print("\(latlng.lat), \(latlng.lng)")
-        // 탭된 위치에 대한 처리 추가
+    // locationManager 설정
+    func setLocationData() {
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest // 위치 업데이트의 정확도 설정 (최고 정확도)
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization() // 위치 서비스를 사용하는 동안 앱의 위치 접근 권한을 요청
+        locationManager.startUpdatingLocation() // 위치 업데이트 시작
     }
-
-    
-
    
 
 }
